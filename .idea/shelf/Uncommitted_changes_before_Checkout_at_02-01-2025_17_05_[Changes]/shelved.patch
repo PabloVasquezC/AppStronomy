@@ -1,0 +1,71 @@
+Index: app/src/main/java/com/example/appstronomy/data/model/UserPreference.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.appstronomy.data.model;\r\n\r\nimport androidx.room.Entity;\r\nimport androidx.room.PrimaryKey;\r\n\r\n@Entity(tableName = \"user_preferences\")\r\npublic class UserPreference {\r\n    @PrimaryKey(autoGenerate = true)\r\n    private int id;\r\n    private String itemId;\r\n    private boolean liked;\r\n\r\n    // Getters y Setters\r\n}
+===================================================================
+diff --git a/app/src/main/java/com/example/appstronomy/data/model/UserPreference.java b/app/src/main/java/com/example/appstronomy/data/model/UserPreference.java
+--- a/app/src/main/java/com/example/appstronomy/data/model/UserPreference.java	(revision 5771ec8b4e506f94381b56fc8b13866067734345)
++++ b/app/src/main/java/com/example/appstronomy/data/model/UserPreference.java	(date 1735847889918)
+@@ -3,12 +3,59 @@
+ import androidx.room.Entity;
+ import androidx.room.PrimaryKey;
+ 
++import com.example.appstronomy.data.dao.UserPreferenceDao;
++
++import java.util.Collections;
++import java.util.List;
++
+ @Entity(tableName = "user_preferences")
+-public class UserPreference {
++public class UserPreference implements UserPreferenceDao {
+     @PrimaryKey(autoGenerate = true)
+     private int id;
+     private String itemId;
+     private boolean liked;
+ 
+-    // Getters y Setters
++    public UserPreference(String itemId, boolean liked) {
++        this.itemId = itemId;
++        this.liked = liked;
++    }
++
++    public int getId() {
++        return id;
++    }
++
++    public void setId(int id) {
++        this.id = id;
++    }
++
++    public String getItemId() {
++        return itemId;
++    }
++
++    public void setItemId(String itemId) {
++        this.itemId = itemId;
++    }
++
++    public boolean isLiked() {
++        return liked;
++    }
++
++    public void setLiked(boolean liked) {
++        this.liked = liked;
++    }
++
++    @Override
++    public void insert(UserPreference userPreference) {
++    }
++
++    @Override
++    public List<UserPreference> getAllPreferences() {
++        return Collections.emptyList();
++    }
++
++
++    @Override
++    public UserPreference getPreferenceByItemId(String itemId) {
++        return null;
++    }
+ }
+\ No newline at end of file

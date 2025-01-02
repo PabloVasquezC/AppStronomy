@@ -1,0 +1,298 @@
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\r\n    alias(libs.plugins.android.application)\r\n    alias(libs.plugins.google.gms.google.services)\r\n}\r\n\r\nandroid {\r\n    namespace 'com.example.appstronomy'\r\n    compileSdk 34\r\n\r\n    defaultConfig {\r\n        applicationId \"com.example.appstronomy\"\r\n        minSdk 24\r\n        targetSdk 34\r\n        versionCode 1\r\n        versionName \"1.0\"\r\n\r\n        testInstrumentationRunner \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            minifyEnabled false\r\n            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility JavaVersion.VERSION_11\r\n        targetCompatibility JavaVersion.VERSION_11\r\n    }\r\n    buildFeatures {\r\n        viewBinding true\r\n    }\r\n}\r\n\r\ndependencies {\r\n\r\n    implementation libs.appcompat\r\n    implementation libs.material\r\n    implementation libs.constraintlayout\r\n    implementation libs.lifecycle.livedata.ktx\r\n    implementation libs.lifecycle.viewmodel.ktx\r\n    implementation libs.navigation.fragment\r\n    implementation libs.navigation.ui\r\n    implementation libs.firebase.auth\r\n    testImplementation libs.junit\r\n    implementation \"androidx.room:room-runtime:2.6.1\"\r\n    androidTestImplementation libs.ext.junit\r\n    androidTestImplementation libs.espresso.core\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle b/app/build.gradle
+--- a/app/build.gradle	(revision 5771ec8b4e506f94381b56fc8b13866067734345)
++++ b/app/build.gradle	(date 1735667951904)
+@@ -43,7 +43,8 @@
+     implementation libs.navigation.ui
+     implementation libs.firebase.auth
+     testImplementation libs.junit
+-    implementation "androidx.room:room-runtime:2.6.1"
++    implementation libs.room.runtime
++    annotationProcessor libs.room.compiler
+     androidTestImplementation libs.ext.junit
+     androidTestImplementation libs.espresso.core
+ 
+Index: app/src/main/java/com/example/appstronomy/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.appstronomy;\r\n\r\nimport android.os.Bundle;\r\nimport android.view.View;\r\nimport android.view.Menu;\r\n\r\nimport com.google.android.material.snackbar.Snackbar;\r\nimport com.google.android.material.navigation.NavigationView;\r\n\r\nimport androidx.navigation.NavController;\r\nimport androidx.navigation.Navigation;\r\nimport androidx.navigation.ui.AppBarConfiguration;\r\nimport androidx.navigation.ui.NavigationUI;\r\nimport androidx.drawerlayout.widget.DrawerLayout;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\n\r\nimport com.example.appstronomy.databinding.ActivityMainBinding;\r\n\r\npublic class MainActivity extends AppCompatActivity {\r\n\r\n    private AppBarConfiguration mAppBarConfiguration;\r\n    private ActivityMainBinding binding;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n\r\n        binding = ActivityMainBinding.inflate(getLayoutInflater());\r\n        setContentView(binding.getRoot());\r\n\r\n        setSupportActionBar(binding.appBarMain.toolbar);\r\n        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                Snackbar.make(view, \"Replace with your own action\", Snackbar.LENGTH_LONG)\r\n                        .setAction(\"Action\", null)\r\n                        .setAnchorView(R.id.fab).show();\r\n            }\r\n        });\r\n        DrawerLayout drawer = binding.drawerLayout;\r\n        NavigationView navigationView = binding.navView;\r\n        // Passing each menu ID as a set of Ids because each\r\n        // menu should be considered as top level destinations.\r\n        mAppBarConfiguration = new AppBarConfiguration.Builder(\r\n                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)\r\n                .setOpenableLayout(drawer)\r\n                .build();\r\n        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);\r\n        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);\r\n        NavigationUI.setupWithNavController(navigationView, navController);\r\n    }\r\n\r\n    @Override\r\n    public boolean onCreateOptionsMenu(Menu menu) {\r\n        // Inflate the menu; this adds items to the action bar if it is present.\r\n        getMenuInflater().inflate(R.menu.main, menu);\r\n        return true;\r\n    }\r\n\r\n    @Override\r\n    public boolean onSupportNavigateUp() {\r\n        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);\r\n        return NavigationUI.navigateUp(navController, mAppBarConfiguration)\r\n                || super.onSupportNavigateUp();\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/appstronomy/MainActivity.java b/app/src/main/java/com/example/appstronomy/MainActivity.java
+--- a/app/src/main/java/com/example/appstronomy/MainActivity.java	(revision 5771ec8b4e506f94381b56fc8b13866067734345)
++++ b/app/src/main/java/com/example/appstronomy/MainActivity.java	(date 1735668072835)
+@@ -1,26 +1,36 @@
+ package com.example.appstronomy;
+ 
+ import android.os.Bundle;
+-import android.view.View;
+ import android.view.Menu;
++import android.view.View;
+ 
++import com.example.appstronomy.data.dao.UserPreferenceDao;
++import com.example.appstronomy.data.database.AppDatabase;
++import com.example.appstronomy.data.model.UserPreference;
+ import com.google.android.material.snackbar.Snackbar;
+ import com.google.android.material.navigation.NavigationView;
+ 
++import androidx.appcompat.app.AppCompatActivity;
++import androidx.drawerlayout.widget.DrawerLayout;
+ import androidx.navigation.NavController;
+ import androidx.navigation.Navigation;
+ import androidx.navigation.ui.AppBarConfiguration;
+ import androidx.navigation.ui.NavigationUI;
+-import androidx.drawerlayout.widget.DrawerLayout;
+-import androidx.appcompat.app.AppCompatActivity;
++import androidx.room.Room;
+ 
+ import com.example.appstronomy.databinding.ActivityMainBinding;
+ 
++import java.util.List;
++
+ public class MainActivity extends AppCompatActivity {
+ 
+     private AppBarConfiguration mAppBarConfiguration;
+     private ActivityMainBinding binding;
+ 
++    // Referencias para Room
++    private AppDatabase db;
++    private UserPreferenceDao userPreferenceDao;
++
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+@@ -48,6 +58,35 @@
+         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+         NavigationUI.setupWithNavController(navigationView, navController);
++
++        // Inicializar Room Database
++        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "nasa-database").build();
++        userPreferenceDao = db.userPreferenceDao();
++
++        // Realizar operación en segundo plano (Insertar ejemplo)
++        new Thread(new Runnable() {
++            @Override
++            public void run() {
++                UserPreference preference = new UserPreference();
++                preference.setItemId("item123");
++                preference.setLiked(true);
++
++                // Insertar en la base de datos
++                userPreferenceDao.insert(preference);
++            }
++        }).start();
++
++        // Leer datos de la base de datos
++        new Thread(new Runnable() {
++            @Override
++            public void run() {
++                List<UserPreference> preferences = userPreferenceDao.getAllPreferences();
++                for (UserPreference pref : preferences) {
++                    // Puedes manejar los datos (mostrarlos en la UI, por ejemplo)
++                    System.out.println(pref.getItemId() + ": " + pref.isLiked());
++                }
++            }
++        }).start();
+     }
+ 
+     @Override
+@@ -63,4 +102,4 @@
+         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
+                 || super.onSupportNavigateUp();
+     }
+-}
+\ No newline at end of file
++}
+Index: gradle/libs.versions.toml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>[versions]\r\nagp = \"8.7.3\"\r\njunit = \"4.13.2\"\r\njunitVersion = \"1.2.1\"\r\nespressoCore = \"3.6.1\"\r\nappcompat = \"1.7.0\"\r\nmaterial = \"1.12.0\"\r\nconstraintlayout = \"2.2.0\"\r\nlifecycleLivedataKtx = \"2.6.1\"\r\nlifecycleViewmodelKtx = \"2.6.1\"\r\nnavigationFragment = \"2.6.0\"\r\nnavigationUi = \"2.6.0\"\r\ngoogleGmsGoogleServices = \"4.4.2\"\r\nfirebaseAuth = \"23.1.0\"\r\n\r\n[libraries]\r\njunit = { group = \"junit\", name = \"junit\", version.ref = \"junit\" }\r\next-junit = { group = \"androidx.test.ext\", name = \"junit\", version.ref = \"junitVersion\" }\r\nespresso-core = { group = \"androidx.test.espresso\", name = \"espresso-core\", version.ref = \"espressoCore\" }\r\nappcompat = { group = \"androidx.appcompat\", name = \"appcompat\", version.ref = \"appcompat\" }\r\nmaterial = { group = \"com.google.android.material\", name = \"material\", version.ref = \"material\" }\r\nconstraintlayout = { group = \"androidx.constraintlayout\", name = \"constraintlayout\", version.ref = \"constraintlayout\" }\r\nlifecycle-livedata-ktx = { group = \"androidx.lifecycle\", name = \"lifecycle-livedata-ktx\", version.ref = \"lifecycleLivedataKtx\" }\r\nlifecycle-viewmodel-ktx = { group = \"androidx.lifecycle\", name = \"lifecycle-viewmodel-ktx\", version.ref = \"lifecycleViewmodelKtx\" }\r\nnavigation-fragment = { group = \"androidx.navigation\", name = \"navigation-fragment\", version.ref = \"navigationFragment\" }\r\nnavigation-ui = { group = \"androidx.navigation\", name = \"navigation-ui\", version.ref = \"navigationUi\" }\r\nfirebase-auth = { group = \"com.google.firebase\", name = \"firebase-auth\", version.ref = \"firebaseAuth\" }\r\n\r\n[plugins]\r\nandroid-application = { id = \"com.android.application\", version.ref = \"agp\" }\r\ngoogle-gms-google-services = { id = \"com.google.gms.google-services\", version.ref = \"googleGmsGoogleServices\" }\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/gradle/libs.versions.toml b/gradle/libs.versions.toml
+--- a/gradle/libs.versions.toml	(revision 5771ec8b4e506f94381b56fc8b13866067734345)
++++ b/gradle/libs.versions.toml	(date 1735667931987)
+@@ -12,6 +12,7 @@
+ navigationUi = "2.6.0"
+ googleGmsGoogleServices = "4.4.2"
+ firebaseAuth = "23.1.0"
++roomRuntime = "2.6.1"
+ 
+ [libraries]
+ junit = { group = "junit", name = "junit", version.ref = "junit" }
+@@ -25,6 +26,8 @@
+ navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
+ navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
+ firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
++room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
++room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+ 
+ [plugins]
+ android-application = { id = "com.android.application", version.ref = "agp" }
+Index: .idea/deploymentTargetSelector.xml
+===================================================================
+diff --git a/.idea/deploymentTargetSelector.xml b/.idea/deploymentTargetSelector.xml
+new file mode 100644
+--- /dev/null	(date 1735266732583)
++++ b/.idea/deploymentTargetSelector.xml	(date 1735266732583)
+@@ -0,0 +1,10 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="deploymentTargetSelector">
++    <selectionStates>
++      <SelectionState runConfigName="app">
++        <option name="selectionMode" value="DROPDOWN" />
++      </SelectionState>
++    </selectionStates>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/runConfigurations.xml
+===================================================================
+diff --git a/.idea/runConfigurations.xml b/.idea/runConfigurations.xml
+new file mode 100644
+--- /dev/null	(date 1735266732579)
++++ b/.idea/runConfigurations.xml	(date 1735266732579)
+@@ -0,0 +1,17 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="RunConfigurationProducerService">
++    <option name="ignoredProducers">
++      <set>
++        <option value="com.intellij.execution.junit.AbstractAllInDirectoryConfigurationProducer" />
++        <option value="com.intellij.execution.junit.AllInPackageConfigurationProducer" />
++        <option value="com.intellij.execution.junit.PatternConfigurationProducer" />
++        <option value="com.intellij.execution.junit.TestInClassConfigurationProducer" />
++        <option value="com.intellij.execution.junit.UniqueIdConfigurationProducer" />
++        <option value="com.intellij.execution.junit.testDiscovery.JUnitTestDiscoveryConfigurationProducer" />
++        <option value="org.jetbrains.kotlin.idea.junit.KotlinJUnitRunConfigurationProducer" />
++        <option value="org.jetbrains.kotlin.idea.junit.KotlinPatternConfigurationProducer" />
++      </set>
++    </option>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/migrations.xml
+===================================================================
+diff --git a/.idea/migrations.xml b/.idea/migrations.xml
+new file mode 100644
+--- /dev/null	(date 1735266732575)
++++ b/.idea/migrations.xml	(date 1735266732575)
+@@ -0,0 +1,10 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectMigrations">
++    <option name="MigrateToGradleLocalJavaHome">
++      <set>
++        <option value="$PROJECT_DIR$" />
++      </set>
++    </option>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/gradle.xml
+===================================================================
+diff --git a/.idea/gradle.xml b/.idea/gradle.xml
+new file mode 100644
+--- /dev/null	(date 1735514280508)
++++ b/.idea/gradle.xml	(date 1735514280508)
+@@ -0,0 +1,20 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="GradleMigrationSettings" migrationVersion="1" />
++  <component name="GradleSettings">
++    <option name="linkedExternalProjectsSettings">
++      <GradleProjectSettings>
++        <option name="testRunner" value="CHOOSE_PER_TEST" />
++        <option name="externalProjectPath" value="$PROJECT_DIR$" />
++        <option name="gradleJvm" value="#GRADLE_LOCAL_JAVA_HOME" />
++        <option name="modules">
++          <set>
++            <option value="$PROJECT_DIR$" />
++            <option value="$PROJECT_DIR$/app" />
++          </set>
++        </option>
++        <option name="resolveExternalAnnotations" value="false" />
++      </GradleProjectSettings>
++    </option>
++  </component>
++</project>
+\ No newline at end of file
+Index: app/google-services.json
+===================================================================
+diff --git a/app/google-services.json b/app/google-services.json
+new file mode 100644
+--- /dev/null	(date 1735666207343)
++++ b/app/google-services.json	(date 1735666207343)
+@@ -0,0 +1,29 @@
++{
++  "project_info": {
++    "project_number": "997920930702",
++    "project_id": "appstronomy-dafe8",
++    "storage_bucket": "appstronomy-dafe8.firebasestorage.app"
++  },
++  "client": [
++    {
++      "client_info": {
++        "mobilesdk_app_id": "1:997920930702:android:d393f9025876563bc782df",
++        "android_client_info": {
++          "package_name": "com.example.appstronomy"
++        }
++      },
++      "oauth_client": [],
++      "api_key": [
++        {
++          "current_key": "AIzaSyCLyN7DM9GWjrD_4VGXx8RX6c8vp77MCe8"
++        }
++      ],
++      "services": {
++        "appinvite_service": {
++          "other_platform_oauth_client": []
++        }
++      }
++    }
++  ],
++  "configuration_version": "1"
++}
+\ No newline at end of file
+Index: .idea/compiler.xml
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+new file mode 100644
+--- /dev/null	(date 1735266732480)
++++ b/.idea/compiler.xml	(date 1735266732480)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="CompilerConfiguration">
++    <bytecodeTargetLevel target="21" />
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/misc.xml
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+new file mode 100644
+--- /dev/null	(date 1735266732453)
++++ b/.idea/misc.xml	(date 1735266732453)
+@@ -0,0 +1,10 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ExternalStorageConfigurationManager" enabled="true" />
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="jbr-21" project-jdk-type="JavaSDK">
++    <output url="file://$PROJECT_DIR$/build/classes" />
++  </component>
++  <component name="ProjectType">
++    <option name="id" value="Android" />
++  </component>
++</project>
+\ No newline at end of file
